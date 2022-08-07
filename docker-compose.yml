@@ -1,0 +1,35 @@
+version: '3'
+
+services:
+  app:
+    user: root
+    build: .
+    volumes:
+      - .:/app
+    ports:
+      - '3000:3000'
+    command: sh -c "npx prisma migrate dev --name init --skip-generate  && yarn start"
+    depends_on:
+      - db_local
+    environment:
+
+      DB_HOST: localhost
+      DB_PORT: 5432
+      DB_USER: admin
+      DB_PASSWORD: password
+      DB_NAME: goodapi
+      
+      PORT: 3000
+      DATABASE_URL: postgresql://admin:password@db_local:5432/goodapi?schema=public
+
+  db_local:
+    user: root
+    image: postgres
+    ports:
+      - '5432:5432'
+    restart: always
+    environment:
+      POSTGRES_DB: goodapi
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+
